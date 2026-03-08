@@ -1,0 +1,9 @@
+export { default as HomeFill } from "./HomeFill";
+export { default as Home } from "./Home";
+export { default as MoreFill } from "./MoreFill";
+export { default as More } from "./More";
+export { default as Notification } from "./Notification";
+export { default as ShopFill } from "./ShopFill";
+export { default as Shop } from "./Shop";
+export { default as WalletFill } from "./WalletFill";
+export { default as WalletOutline } from "./WalletOutline";
