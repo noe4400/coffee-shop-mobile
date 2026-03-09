@@ -12,6 +12,7 @@ import BottomTabsNavigator from '@/navigation/BottomTabsNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WalletProvider } from '@/context';
+import { CartProvider } from '@/context/CartContext';
 
 
 export default function App() {
@@ -34,7 +35,9 @@ export default function App() {
           <NavigationContainer>
              <QueryClientProvider client={queryClient}>
               <WalletProvider>
+                <CartProvider>
                  <BottomTabsNavigator />
+                </CartProvider>
               </WalletProvider>
             </QueryClientProvider>
           </NavigationContainer>
