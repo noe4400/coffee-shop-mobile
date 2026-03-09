@@ -8,5 +8,7 @@ export type MenuItem = {
 
 export type WalletContextType = {
   publicKey?: string;
+  session?: string;
   setPublicKey: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setSession: React.Dispatch<React.SetStateAction<string | undefined>>;
 };

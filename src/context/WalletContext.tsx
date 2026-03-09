@@ -9,9 +9,10 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export const WalletProvider = ({ children }: WalletProviderProps) => {
   const [publicKey, setPublicKey] = useState<string | undefined>();
+  const [session, setSession]  = useState<string | undefined>();
 
   return (
-    <WalletContext.Provider value={{ publicKey, setPublicKey }}>
+    <WalletContext.Provider value={{ publicKey, setPublicKey, session, setSession }}>
       {children}
     </WalletContext.Provider>
   );

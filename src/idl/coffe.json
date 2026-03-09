@@ -1,91 +1,29 @@
 {
-  "address": "8QNsjr6drj8ptAAmrZybaubn2U91xRY93taqobuU43G8",
-  "metadata": {
-    "name": "coffe",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
-  },
+  "version": "0.1.0",
+  "name": "coffe",
   "instructions": [
     {
       "name": "add_menu_item",
-      "discriminator": [
-        19,
-        78,
-        176,
-        224,
-        127,
-        48,
-        50,
-        80
-      ],
       "accounts": [
         {
           "name": "coffee_shop",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  102,
-                  102,
-                  101,
-                  101,
-                  95,
-                  115,
-                  104,
-                  111,
-                  112
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "owner"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "menu_item",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  110,
-                  117,
-                  95,
-                  105,
-                  116,
-                  101,
-                  109
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "coffee_shop"
-              },
-              {
-                "kind": "arg",
-                "path": "name"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "owner",
-          "writable": true,
-          "signer": true
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "system_program",
-          "address": "11111111111111111111111111111111"
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
@@ -101,53 +39,21 @@
     },
     {
       "name": "create_coffee_shop",
-      "discriminator": [
-        175,
-        136,
-        164,
-        109,
-        220,
-        230,
-        73,
-        194
-      ],
       "accounts": [
         {
           "name": "coffee_shop",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  102,
-                  102,
-                  101,
-                  101,
-                  95,
-                  115,
-                  104,
-                  111,
-                  112
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "owner"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "owner",
-          "writable": true,
-          "signer": true
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "system_program",
-          "address": "11111111111111111111111111111111"
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
@@ -159,85 +65,31 @@
     },
     {
       "name": "place_order",
-      "discriminator": [
-        51,
-        194,
-        155,
-        175,
-        109,
-        130,
-        96,
-        106
-      ],
       "accounts": [
         {
           "name": "coffee_shop",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  102,
-                  102,
-                  101,
-                  101,
-                  95,
-                  115,
-                  104,
-                  111,
-                  112
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "coffee_shop.owner",
-                "account": "CoffeeShop"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "order",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  100,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "coffee_shop"
-              },
-              {
-                "kind": "account",
-                "path": "coffee_shop.total_orders",
-                "account": "CoffeeShop"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "customer",
-          "writable": true,
-          "signer": true
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "owner",
-          "writable": true
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "system_program",
-          "address": "11111111111111111111111111111111"
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
@@ -245,9 +97,7 @@
           "name": "items",
           "type": {
             "vec": {
-              "defined": {
-                "name": "OrderItem"
-              }
+              "defined": "OrderItem"
             }
           }
         }
@@ -255,83 +105,21 @@
     },
     {
       "name": "remove_menu_item",
-      "discriminator": [
-        187,
-        133,
-        31,
-        58,
-        74,
-        94,
-        178,
-        55
-      ],
       "accounts": [
         {
           "name": "coffee_shop",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  102,
-                  102,
-                  101,
-                  101,
-                  95,
-                  115,
-                  104,
-                  111,
-                  112
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "owner"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "menu_item",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  110,
-                  117,
-                  95,
-                  105,
-                  116,
-                  101,
-                  109
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "coffee_shop"
-              },
-              {
-                "kind": "account",
-                "path": "menu_item.name",
-                "account": "MenuItem"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "owner",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "coffee_shop"
-          ]
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": [
@@ -343,83 +131,21 @@
     },
     {
       "name": "update_menu_item",
-      "discriminator": [
-        36,
-        184,
-        131,
-        140,
-        162,
-        123,
-        162,
-        5
-      ],
       "accounts": [
         {
           "name": "coffee_shop",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  102,
-                  102,
-                  101,
-                  101,
-                  95,
-                  115,
-                  104,
-                  111,
-                  112
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "owner"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "menu_item",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  101,
-                  110,
-                  117,
-                  95,
-                  105,
-                  116,
-                  101,
-                  109
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "coffee_shop"
-              },
-              {
-                "kind": "account",
-                "path": "menu_item.name",
-                "account": "MenuItem"
-              }
-            ]
-          }
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "owner",
-          "writable": true,
-          "signer": true,
-          "relations": [
-            "coffee_shop"
-          ]
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": [
@@ -441,42 +167,105 @@
   "accounts": [
     {
       "name": "CoffeeShop",
-      "discriminator": [
-        228,
-        51,
-        18,
-        88,
-        68,
-        54,
-        181,
-        196
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "total_orders",
+            "type": "u64"
+          }
+        ]
+      }
     },
     {
       "name": "MenuItem",
-      "discriminator": [
-        225,
-        148,
-        239,
-        174,
-        246,
-        128,
-        31,
-        0
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "available",
+            "type": "bool"
+          }
+        ]
+      }
     },
     {
       "name": "Order",
-      "discriminator": [
-        134,
-        173,
-        223,
-        185,
-        77,
-        86,
-        28,
-        51
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "publicKey"
+          },
+          {
+            "name": "customer",
+            "type": "publicKey"
+          },
+          {
+            "name": "items",
+            "type": {
+              "vec": {
+                "defined": "OrderItem"
+              }
+            }
+          },
+          {
+            "name": "total_price",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "OrderItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "publicKey"
+          },
+          {
+            "name": "menu_item",
+            "type": "publicKey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "quantity",
+            "type": "u8"
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -509,110 +298,6 @@
       "code": 6005,
       "name": "InvalidQuantity",
       "msg": "Quantity must be at least 1"
-    }
-  ],
-  "types": [
-    {
-      "name": "CoffeeShop",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "total_orders",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MenuItem",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "shop",
-            "type": "pubkey"
-          },
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "available",
-            "type": "bool"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Order",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "shop",
-            "type": "pubkey"
-          },
-          {
-            "name": "customer",
-            "type": "pubkey"
-          },
-          {
-            "name": "items",
-            "type": {
-              "vec": {
-                "defined": {
-                  "name": "OrderItem"
-                }
-              }
-            }
-          },
-          {
-            "name": "total_price",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "OrderItem",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "shop",
-            "type": "pubkey"
-          },
-          {
-            "name": "menu_item",
-            "type": "pubkey"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "quantity",
-            "type": "u8"
-          }
-        ]
-      }
     }
   ]
 }
