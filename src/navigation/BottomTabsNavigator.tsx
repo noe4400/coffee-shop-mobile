@@ -6,6 +6,7 @@ import CustomTabBar from './CustomTabBar';
 import { useWallet } from '@/context/WalletContext';
 import { decryptPhantomPayload } from '@/services/wallet/phantomClient';
 import * as Linking from "expo-linking";
+import OrderScreen from '@/screens/OrderScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +40,7 @@ useEffect(() => {
      >
       <Tab.Screen name="Home" component={HomeScreen}/>
       <Tab.Screen name="Wallet" component={WalletScreen} />
-      <Tab.Screen name="Order" component={WalletScreen} />
+      <Tab.Screen name="Order" component={OrderScreen} />
       <Tab.Screen name="More" component={WalletScreen} />
     </Tab.Navigator>
   )

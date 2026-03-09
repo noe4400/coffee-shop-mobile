@@ -11,8 +11,8 @@ import { Sora_800ExtraBold } from '@expo-google-fonts/sora/800ExtraBold';
 import BottomTabsNavigator from '@/navigation/BottomTabsNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WalletProvider } from '@/context';
-import { CartProvider } from '@/context/CartContext';
+import { CartProvider, WalletProvider } from '@/context';
+
 
 
 export default function App() {

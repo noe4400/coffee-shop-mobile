@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import React from 'react'
 import { PlatformPressable } from '@react-navigation/elements';
 import { useLinkBuilder } from '@react-navigation/native';
@@ -6,10 +6,13 @@ import { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
 import { NavigationHelpers, ParamListBase, TabNavigationState } from '@react-navigation/native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { TAB_CONFIG } from './tabs.config'
+import { useCart } from '@/context';
 
 const CustomTabBar = ({state, descriptors, navigation}: {state: TabNavigationState<ParamListBase>, descriptors: Record<string, any>, navigation: NavigationHelpers<ParamListBase, BottomTabNavigationEventMap>}) => {
   const { buildHref } = useLinkBuilder();
   const { theme } = useUnistyles();
+  const { items } = useCart();
+
 
   return (
     <View style={styles.tabBarContainer}>
@@ -37,6 +40,9 @@ const CustomTabBar = ({state, descriptors, navigation}: {state: TabNavigationSta
           });
         };
 const { icon: Icon, focusedIcon: FocusedIcon } = TAB_CONFIG[route.name as keyof typeof TAB_CONFIG] || {};
+
+
+const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 const IconComponent = isFocused ? FocusedIcon ?? Icon : Icon;
         return (
           <PlatformPressable
@@ -55,6 +61,12 @@ const IconComponent = isFocused ? FocusedIcon ?? Icon : Icon;
                   color={isFocused ? theme.colors.primary : theme.colors.grey.lighter}
                 />
                 )}
+
+              {route.name === "Order" && itemCount > 0 && (
+                <View style={styles.batchInfo}>
+                  <Text style={styles.batchLabel}>{itemCount}</Text>
+                </View>
+              )}
                 { isFocused && <View style={styles.tabIndicator(isFocused)}/>
 
                 }
@@ -73,6 +85,22 @@ const styles = StyleSheet.create((theme)=>({
         height: 99,
         paddingHorizontal: 55,
         paddingVertical: 24,
+    },
+    batchInfo: {
+      backgroundColor: theme.colors.primary,
+      borderRadius: 8,
+      width: 16,
+      height: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      top: -4,
+      right: -10,
+    },
+    batchLabel:{
+      color: theme.colors.surface.white,
+      fontSize: 10,
+      fontWeight: 'bold',
     },
     tabIndicator: (isFocused) => ({
       position: 'absolute',
