@@ -1,12 +1,10 @@
 import { Text, View } from 'react-native'
 import React from 'react'
 import { StyleSheet } from 'react-native-unistyles'
+import { MenuItem } from '@/types'
 
 type ItemCardProps = {
-    item: {
-        name: string;
-        price: string;
-    }
+    item: MenuItem
 }
 
 const ItemCard = ({item}: ItemCardProps) => {

@@ -1,3 +1,4 @@
+import './src/polyfills';
 import { Text, View } from 'react-native';
 import { useFonts } from '@expo-google-fonts/sora/useFonts';
 import { Sora_100Thin } from '@expo-google-fonts/sora/100Thin';
@@ -10,8 +11,10 @@ import { Sora_700Bold } from '@expo-google-fonts/sora/700Bold';
 import { Sora_800ExtraBold } from '@expo-google-fonts/sora/800ExtraBold';
 import BottomTabsNavigator from '@/navigation/BottomTabsNavigator';
 import { NavigationContainer } from '@react-navigation/native';
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 export default function App() {
+  const queryClient = new QueryClient()
+  
 
   let [fontsLoaded] = useFonts({
     Sora_100Thin, 
@@ -28,7 +31,9 @@ export default function App() {
   } else {
     return (
           <NavigationContainer>
-            <BottomTabsNavigator />
+             <QueryClientProvider client={queryClient}>
+               <BottomTabsNavigator />
+            </QueryClientProvider>
           </NavigationContainer>
     );
   }

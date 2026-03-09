@@ -2,27 +2,13 @@ import { View, Text, FlatList, Pressable } from 'react-native'
 import React from 'react'
 import { StyleSheet } from 'react-native-unistyles'
 import ItemCard from '@/components/ItemCard'
+import { useMenuItems } from '@/hooks/useMenuItems'
 
-const coffeeItems = [{
-  name: 'Espresso',
-  price: '$3.00',
-},
-{
-  name: 'Cappuccino',
-  price: '$4.00',
-},
-{
-  name: 'Latte',
-  price: '$4.50',
-},
-{
-  name: 'Mocha',
-  price: '$5.00'
-}
-]
 
 const HomeScreen = () => {
+ const { data:MenuItems, isLoading }  = useMenuItems();
   const [selected, setSelected] = React.useState("All Coffee");
+  
    const renderItem = ({ item, idx }) => {
     const isSelected = item === selected;
 
@@ -54,16 +40,16 @@ const HomeScreen = () => {
         showsHorizontalScrollIndicator={false}
       />
       <FlatList
-        data={coffeeItems}
-        keyExtractor={(_, index) => index.toString()}
+        data={MenuItems}
+        keyExtractor={(item) => item.id}
         renderItem={({item})=><ItemCard item={item}/>}
-          columnWrapperStyle={{
-    gap: 12
-  }}  
-    contentContainerStyle={{
-    padding: 16,
-    gap: 12
-  }}
+        columnWrapperStyle={{
+        gap: 12
+        }}  
+        contentContainerStyle={{
+        padding: 16,
+        gap: 12
+        }}
         style={{flexGrow: 0, marginHorizontal: 'auto'}}
         showsVerticalScrollIndicator={false}
         numColumns={2}
@@ -77,8 +63,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create((theme, rt)=>({
   container: {
     flex: 1,
-    justifyContent: 'center',
-
+    marginTop: rt.insets.top,
 
   },
   item: (isSelected, isFirtItem) => ( {
