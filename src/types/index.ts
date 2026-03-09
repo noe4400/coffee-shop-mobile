@@ -5,3 +5,8 @@ export type MenuItem = {
   price: number;
   available: boolean;
 };
+
+export type WalletContextType = {
+  publicKey?: string;
+  setPublicKey: React.Dispatch<React.SetStateAction<string | undefined>>;
+};

@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "coffeeapp",
     "name": "coffee-shop-mobile",
     "slug": "coffee-shop-mobile",
     "version": "1.0.0",

@@ -1,12 +1,35 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '@/screens/HomeScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import CustomTabBar from './CustomTabBar';
+import { useWallet } from '@/context/WalletContext';
+import { decryptPhantomPayload } from '@/services/wallet/phantomClient';
+import * as Linking from "expo-linking";
+
 const Tab = createBottomTabNavigator();
 
 
 const BottomTabsNavigator = () => {
+    const { setPublicKey } = useWallet();
+
+
+useEffect(() => {
+  const subscription = Linking.addEventListener("url", ({ url }) => {
+    const { queryParams } = Linking.parse(url);
+
+    if (!queryParams) return;
+
+    const payload = decryptPhantomPayload(queryParams);
+
+    if (payload?.public_key) {
+      setPublicKey(payload.public_key);
+    }
+  });
+
+  return () => subscription.remove();
+}, []);
+
   return (
      <Tab.Navigator
      screenOptions={{
