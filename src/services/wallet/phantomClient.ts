@@ -1,78 +1,126 @@
 import nacl from "tweetnacl";
 import bs58 from "bs58";
 import * as Linking from "expo-linking";
-import { PHANTOM_CONNECT_URL, SOLANA_NETWORK } from "../solana/solana";
+import { PHANTOM_CONNECT_URL, PHANTOM_SIGN_AND_SEND_URL, SOLANA_NETWORK } from "../solana/solana";
+import type { WalletSession } from "@/context/WalletContext";
 
-let dappKeyPair: nacl.BoxKeyPair | null = null;
+// ─── Connect ──────────────────────────────────────────────────────────────────
 
-export const createPhantomConnection = () => {
-  dappKeyPair = nacl.box.keyPair();
-
+export const buildConnectURL = (dappKeyPair: nacl.BoxKeyPair): string => {
   const params = new URLSearchParams({
     dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
     cluster: SOLANA_NETWORK,
     redirect_link: Linking.createURL("/"),
     app_url: Linking.createURL("/"),
   });
-
-  const url = `${PHANTOM_CONNECT_URL}?${params.toString()}`;
-
-  Linking.openURL(url);
+  return `${PHANTOM_CONNECT_URL}?${params.toString()}`;
 };
-export let sharedSecret: Uint8Array | null = null;
-export let phantomEncryptionPublicKey: Uint8Array | null = null;
-export const decryptPhantomPayload = (queryParams: any) => {
-  if (!dappKeyPair) return null;
-  console.log("Decrypting Phantom payload with query params:", queryParams);
 
-  // error callback — return early
-  if (queryParams.errorCode) return null;
+export const openPhantomConnect = async (dappKeyPair: nacl.BoxKeyPair): Promise<void> => {
+  const url = buildConnectURL(dappKeyPair);
+  const canOpen = await Linking.canOpenURL(url);
+  if (!canOpen) throw new Error("Phantom wallet is not installed");
+  await Linking.openURL(url);
+};
 
-  // connect response — has phantom_encryption_public_key
-  if (queryParams.phantom_encryption_public_key) {
-    const phantomPubKey = bs58.decode(queryParams.phantom_encryption_public_key);
-    const nonce = bs58.decode(queryParams.nonce);
-    const encryptedData = bs58.decode(queryParams.data);
+// ─── Decrypt ──────────────────────────────────────────────────────────────────
 
-    sharedSecret = nacl.box.before(phantomPubKey, dappKeyPair.secretKey);
+type DecryptConnectResult = {
+  public_key: string;
+  session: string;
+};
 
-    const decrypted = nacl.box.open.after(encryptedData, nonce, sharedSecret);
-    if (!decrypted) return null;
-    return JSON.parse(new TextDecoder().decode(decrypted));
+/**
+ * Decrypts the connect callback from Phantom.
+ * Returns the decrypted payload + the computed sharedSecret for future use.
+ */
+export const decryptConnectPayload = (
+  queryParams: Record<string, string>,
+  dappKeyPair: nacl.BoxKeyPair
+): { payload: DecryptConnectResult; sharedSecret: Uint8Array; phantomPublicKey: Uint8Array } | null => {
+  if (queryParams.errorCode) {
+    console.warn("Phantom connect error:", queryParams.errorMessage);
+    return null;
   }
 
-  // transaction callback — no phantom_encryption_public_key, reuse existing sharedSecret
-  if (queryParams.data && queryParams.nonce && sharedSecret) {
-    const nonce = bs58.decode(queryParams.nonce);
-    const encryptedData = bs58.decode(queryParams.data);
+  const { phantom_encryption_public_key, nonce, data } = queryParams;
+  if (!phantom_encryption_public_key || !nonce || !data) return null;
 
-    const decrypted = nacl.box.open.after(encryptedData, nonce, sharedSecret);
-    if (!decrypted) return null;
-    return JSON.parse(new TextDecoder().decode(decrypted));
+  const phantomPublicKey = bs58.decode(phantom_encryption_public_key);
+  const sharedSecret = nacl.box.before(phantomPublicKey, dappKeyPair.secretKey);
+  const decrypted = nacl.box.open.after(bs58.decode(data), bs58.decode(nonce), sharedSecret);
+
+  if (!decrypted) return null;
+
+  return {
+    payload: JSON.parse(new TextDecoder().decode(decrypted)) as DecryptConnectResult,
+    sharedSecret,
+    phantomPublicKey,
+  };
+};
+
+/**
+ * Decrypts any subsequent callback (sign, signAndSend, etc.)
+ * Reuses the sharedSecret established at connect time.
+ */
+export const decryptCallbackPayload = <T = Record<string, unknown>>(
+  queryParams: Record<string, string>,
+  sharedSecret: Uint8Array
+): T | null => {
+  if (queryParams.errorCode) {
+    console.warn("Phantom callback error:", queryParams.errorMessage);
+    return null;
   }
 
-  return null;
+  const { nonce, data } = queryParams;
+  if (!nonce || !data) return null;
+
+  const decrypted = nacl.box.open.after(bs58.decode(data), bs58.decode(nonce), sharedSecret);
+  if (!decrypted) return null;
+
+  return JSON.parse(new TextDecoder().decode(decrypted)) as T;
 };
 
-const nonce = nacl.randomBytes(24);
-export const getEncryptedPayload = ({serialized, session}) => {
-  if (!dappKeyPair) return null;
+// ─── Encrypt (for transactions) ───────────────────────────────────────────────
 
-  return nacl.box.after(
-  Buffer.from(JSON.stringify({ transaction: serialized, session })),
-  nonce,
-  sharedSecret!  // ← already the computed shared secret, no need for phantomPublicKey separately
-);
+type EncryptedPayload = {
+  encryptedData: Uint8Array;
+  nonce: Uint8Array;
 };
 
-export const createURLSearchParams = ({encryptedPayload}) =>{
-    if (!dappKeyPair) return null;
+export const encryptPayload = (
+  payload: object,
+  sharedSecret: Uint8Array
+): EncryptedPayload => {
+  // Fresh nonce per call — never reuse
+  const nonce = nacl.randomBytes(24);
+  const encryptedData = nacl.box.after(
+    Buffer.from(JSON.stringify(payload)),
+    nonce,
+    sharedSecret
+  );
+  return { encryptedData, nonce };
+};
 
-    return new URLSearchParams({
-  dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-  nonce: bs58.encode(nonce),
-  redirect_link: Linking.createURL("/transaction"),
-  payload: bs58.encode(encryptedPayload),
-})
+// ─── Build transaction URL ────────────────────────────────────────────────────
 
-}
+export const buildSignAndSendURL = (
+  serializedTransaction: string,
+  walletSession: WalletSession,
+  dappKeyPair: nacl.BoxKeyPair,
+  redirectPath = "/transaction"
+): string => {
+  const { encryptedData, nonce } = encryptPayload(
+    { transaction: serializedTransaction, session: walletSession.session },
+    walletSession.sharedSecret
+  );
+
+  const params = new URLSearchParams({
+    dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
+    nonce: bs58.encode(nonce),
+    redirect_link: Linking.createURL(redirectPath),
+    payload: bs58.encode(encryptedData),
+  });
+
+  return `${PHANTOM_SIGN_AND_SEND_URL}?${params.toString()}`;
+};

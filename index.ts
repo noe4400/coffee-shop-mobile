@@ -1,3 +1,4 @@
+import './src/polyfills';
 import './uniStyles';
 import { registerRootComponent } from 'expo';
 

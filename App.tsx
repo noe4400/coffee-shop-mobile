@@ -1,4 +1,3 @@
-import './src/polyfills';
 import { useFonts } from '@expo-google-fonts/sora/useFonts';
 import { Sora_100Thin } from '@expo-google-fonts/sora/100Thin';
 import { Sora_200ExtraLight } from '@expo-google-fonts/sora/200ExtraLight';

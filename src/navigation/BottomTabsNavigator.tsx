@@ -4,7 +4,6 @@ import HomeScreen from '@/screens/HomeScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import CustomTabBar from './CustomTabBar';
 import { useWallet } from '@/context/WalletContext';
-import { decryptPhantomPayload } from '@/services/wallet/phantomClient';
 import * as Linking from "expo-linking";
 import OrderScreen from '@/screens/OrderScreen';
 import { VersionedTransaction } from '@solana/web3.js';
@@ -12,13 +11,14 @@ import { connection } from '@/services/solana/connection';
 import { Alert } from 'react-native';
 import bs58 from "bs58";
 import { useCart } from '@/context';
+import { decryptCallbackPayload, decryptConnectPayload } from '@/services/wallet/phantomClient';
 
 
 const Tab = createBottomTabNavigator();
 
 
 const BottomTabsNavigator = () => {
-    const { setPublicKey, setSession } = useWallet();
+  const { dappKeyPair, walletSession, setWalletSession } = useWallet()
     const { clearCart } = useCart();
 
 
@@ -28,32 +28,51 @@ useEffect(() => {
 
     if (!queryParams) return;
 
+    // error handled inside decrypt functions, but catch it early for user feedback
     if (queryParams.errorCode) {
-      Alert.alert("Phantom error", queryParams.errorMessage as string);
+      Alert.alert("Phantom Error", queryParams.errorMessage as string);
       return;
     }
 
-    const payload = decryptPhantomPayload(queryParams);
-    if (!payload) return;
-
-    // connect response
-    if (payload.public_key) {
-      setPublicKey(payload.public_key);
-      setSession(payload.session);
+    // ── Connect callback ──────────────────────────────────────────────
+    if (queryParams.phantom_encryption_public_key) {
+      const result = decryptConnectPayload(
+        queryParams as Record<string, string>,
+        dappKeyPair
+      );
+      if (!result) {
+        Alert.alert("Error", "Failed to decrypt connect response");
+        return;
+      }
+      setWalletSession({
+        publicKey: result.payload.public_key,
+        session: result.payload.session,
+        sharedSecret: result.sharedSecret,
+        phantomPublicKey: result.phantomPublicKey,
+      });
       return;
     }
 
-    // transaction response
-    if (payload.transaction) {
-      console.log("payload transaction", payload)
+    // ── Transaction callback ──────────────────────────────────────────
+    if (queryParams.nonce && queryParams.data && walletSession) {
+      const payload = decryptCallbackPayload<{ transaction: string }>(
+        queryParams as Record<string, string>,
+        walletSession.sharedSecret
+      );
+      if (!payload?.transaction) {
+        Alert.alert("Error", "Failed to decrypt transaction response");
+        return;
+      }
+
       const signedTx = VersionedTransaction.deserialize(
         bs58.decode(payload.transaction)
       );
-      connection.sendRawTransaction(signedTx.serialize())
+
+      connection
+        .sendRawTransaction(signedTx.serialize())
         .then((signature) => {
-          Alert.alert("Success", "Transaction sent: " + signature);
+          Alert.alert("Success", `Transaction sent: ${signature}`);
           clearCart();
-          // clear cart, navigate to success, etc.
         })
         .catch((err) => {
           console.error("Failed to send transaction:", err);
@@ -63,8 +82,7 @@ useEffect(() => {
   });
 
   return () => subscription.remove();
-}, []);
-
+}, [dappKeyPair, walletSession]);
   return (
      <Tab.Navigator
      screenOptions={{
