@@ -1,0 +1,8 @@
+{
+  "type": "github",
+  "url": "https://github.com/expo/skills.git",
+  "ref": "main",
+  "subpath": "plugins/expo/skills/building-native-ui",
+  "skillName": "building-native-ui",
+  "installedAt": "2026-03-16T06:52:45.653580Z"
+}

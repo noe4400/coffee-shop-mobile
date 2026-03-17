@@ -1,12 +1,6 @@
 import nacl from "tweetnacl";
 import React, { createContext, useCallback, useContext, useState } from "react";
-
-export type WalletSession = {
-  publicKey: string;
-  session: string;
-  sharedSecret: Uint8Array;
-  phantomPublicKey: Uint8Array;
-};
+import type { WalletSession } from "@/services/wallet/types";
 
 type WalletContextType = {
   dappKeyPair: nacl.BoxKeyPair;

@@ -6,8 +6,6 @@ import { decodeMenuItem } from "./decodedMenuItems";
 import { MenuItem } from "@/types";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
-const PROGRAM_ID_KEY = new PublicKey(PROGRAM_ID);
-
 export const fetchMenuItemsByShop = async (
   shopAddress: string
 ): Promise<MenuItem[]> => {

@@ -8,7 +8,7 @@ import * as Linking from "expo-linking";
 import OrderScreen from '@/screens/OrderScreen';
 import { VersionedTransaction } from '@solana/web3.js';
 import { connection } from '@/services/solana/connection';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import bs58 from "bs58";
 import { useCart } from '@/context';
 import { decryptCallbackPayload, decryptConnectPayload } from '@/services/wallet/phantomClient';
@@ -23,6 +23,10 @@ const BottomTabsNavigator = () => {
 
 
 useEffect(() => {
+  if (Platform.OS !== "ios") {
+    return;
+  }
+
   const subscription = Linking.addEventListener("url", ({ url }) => {
     const { queryParams } = Linking.parse(url);
 

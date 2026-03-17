@@ -1,21 +1,27 @@
-import { View, Text, Pressable, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { useWallet } from '@/context'
 import { openPhantomConnect } from '@/services/wallet/phantomClient'
+import walletClient from '@/services/wallet/walletClient'
 
 
 const WalletScreen = () => {
-  const { dappKeyPair, walletSession, disconnect } = useWallet()
+  const { dappKeyPair, walletSession, setWalletSession, disconnect } = useWallet()
   const [isConnecting, setIsConnecting] = useState(false)
 
   const handleConnect = async () => {
     try {
       setIsConnecting(true)
-      await openPhantomConnect(dappKeyPair)
+      if (Platform.OS === "ios") {
+        await openPhantomConnect(dappKeyPair)
+      } else {
+        const session = await walletClient.connect();
+        setWalletSession(session);
+      }
     } catch (error) {
       Alert.alert(
-        'Phantom Not Found',
-        'Please install the Phantom wallet app to continue.',
+        'Wallet Not Found',
+        'Please install a compatible wallet app to continue.',
         [{ text: 'OK' }]
       )
     } finally {

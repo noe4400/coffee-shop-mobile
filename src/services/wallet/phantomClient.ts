@@ -2,7 +2,7 @@ import nacl from "tweetnacl";
 import bs58 from "bs58";
 import * as Linking from "expo-linking";
 import { PHANTOM_CONNECT_URL, PHANTOM_SIGN_AND_SEND_URL, SOLANA_NETWORK } from "../solana/solana";
-import type { WalletSession } from "@/context/WalletContext";
+import type { WalletSession } from "@/services/wallet/types";
 
 // ─── Connect ──────────────────────────────────────────────────────────────────
 

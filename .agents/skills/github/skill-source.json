@@ -1,0 +1,8 @@
+{
+  "type": "github",
+  "url": "https://github.com/callstackincubator/agent-skills.git",
+  "ref": "main",
+  "subpath": "skills/github",
+  "skillName": "github",
+  "installedAt": "2026-03-16T06:35:37.129010Z"
+}

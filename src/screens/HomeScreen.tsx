@@ -6,7 +6,7 @@ import { useMenuItems } from '@/hooks/useMenuItems'
 
 
 const HomeScreen = () => {
- const { data:MenuItems, isLoading }  = useMenuItems();
+ const { data:MenuItems }  = useMenuItems();
  console.log("MenuItems", MenuItems)
   const [selected, setSelected] = React.useState("All Coffee");
   

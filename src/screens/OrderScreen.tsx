@@ -1,40 +1,55 @@
-import { View, Text, FlatList, Pressable, Alert } from 'react-native'
+import { View, Text, FlatList, Pressable, Alert, Platform } from 'react-native'
 import React from 'react'
 import { useCart, useWallet } from '@/context'
 import { StyleSheet } from 'react-native-unistyles'
 import { buildPlaceOrderTransaction } from '@/services/solana/placeOrder'
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import * as Linking from "expo-linking";
-import { createURLSearchParams, getEncryptedPayload } from '@/services/wallet/phantomClient'
+import { buildSignAndSendURL } from '@/services/wallet/phantomClient'
+import walletClient from '@/services/wallet/walletClient'
 
 const OrderScreen = () => {
-  const {items:cartItems} = useCart()
-  const {publicKey, session} = useWallet()
+  const { items: cartItems, clearCart } = useCart()
+  const { walletSession, dappKeyPair } = useWallet()
 
   const handleOrder = async () => {
 
-    if(!publicKey || !session) {
+    if (!walletSession) {
       Alert.alert("Wallet not connected", "Please connect your wallet to place the order");
       return;
     }
 
-  const tx = await buildPlaceOrderTransaction(
-    new PublicKey(publicKey),
-    cartItems
-  );
+    const tx = await buildPlaceOrderTransaction(
+      new PublicKey(walletSession.publicKey),
+      cartItems
+    );
 
-  const serialized = tx
-    .serialize({ requireAllSignatures: false })
-    .toString("base64");
+    if (Platform.OS === "ios") {
+      const serialized = (tx as VersionedTransaction)
+        .serialize({ requireAllSignatures: false })
+        .toString("base64");
 
-    // encrypt the payload
-    const encryptedPayload  = getEncryptedPayload({serialized, session})
-    const params = createURLSearchParams({encryptedPayload});
-  
-  const url =
-    `https://phantom.app/ul/v1/signTransaction?${params}`;
+      const url = buildSignAndSendURL(
+        serialized,
+        walletSession,
+        dappKeyPair,
+        "/order"
+      );
 
- Linking.openURL(url);
+      await Linking.openURL(url);
+      return;
+    }
+
+    try {
+      const signature = await walletClient.signAndSendTransaction(
+        tx as VersionedTransaction
+      );
+      Alert.alert("Success", `Transaction sent: ${signature}`);
+      clearCart();
+    } catch (e) {
+      console.error("Failed to send transaction via wallet adapter:", e);
+      Alert.alert("Error", "Failed to send transaction");
+    }
 
 };
 

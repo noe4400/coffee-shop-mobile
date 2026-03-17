@@ -1,0 +1,8 @@
+{
+  "type": "github",
+  "url": "https://github.com/expo/skills.git",
+  "ref": "main",
+  "subpath": "plugins/expo/skills/expo-api-routes",
+  "skillName": "expo-api-routes",
+  "installedAt": "2026-03-16T06:53:06.070044Z"
+}

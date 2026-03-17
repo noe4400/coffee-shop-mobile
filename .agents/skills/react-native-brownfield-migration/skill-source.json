@@ -1,0 +1,8 @@
+{
+  "type": "github",
+  "url": "https://github.com/callstackincubator/agent-skills.git",
+  "ref": "main",
+  "subpath": "skills/react-native-brownfield-migration",
+  "skillName": "react-native-brownfield-migration",
+  "installedAt": "2026-03-16T06:35:37.127805Z"
+}

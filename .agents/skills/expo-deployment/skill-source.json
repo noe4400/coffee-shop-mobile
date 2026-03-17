@@ -1,0 +1,8 @@
+{
+  "type": "github",
+  "url": "https://github.com/expo/skills.git",
+  "ref": "main",
+  "subpath": "plugins/expo/skills/expo-deployment",
+  "skillName": "expo-deployment",
+  "installedAt": "2026-03-16T06:53:42.619366Z"
+}
